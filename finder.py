@@ -55,39 +55,3 @@ f.close()
 print("DONE")
 
 '''                                                    
-
-           
-import requests
-import re
-def getcsrf(t):
-	d=t[(t.find("csrf")+28):(t.find("csrf")+60)]
-	return d
-total=[]
-def eliminate(l):
-        if(l not in total):
-                total.append(l)
-                
-url="https://dnsdumpster.com/"
-dom=input("Enter the domain ")
-r=requests.get(url)
-t=r.text
-#r=requests.post("https://dnsdumpster.com",data={'csrfmiddlewaretoken':getcsrf(t)})
-tkn="csrftoken="+getcsrf(t)+";"
-header = {"Referer":"https://dnsdumpster.com","Cookie" :tkn}
-r=requests.post("https://dnsdumpster.com",data={'csrfmiddlewaretoken':getcsrf(t),'targetip':dom},headers=header)
-#print(r.text)
-'''
-import urllib.request
-import urllib.parse
-values={'csrfmiddlewaretoken':getcsrf(t),'targetip':dom},headers=header)
-'''
-resp=r.text
-sd=[]
-l=re.findall((r'<tr><td class="col-md-4">(.*?).'+dom+'<br>'),resp)
-for i in l:
-        if(i!=''):
-                v=i+'.'+dom
-                eliminate(v)
-for i in total:
-        print(i,"\n")
-
