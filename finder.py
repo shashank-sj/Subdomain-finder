@@ -1,12 +1,38 @@
 import requests
-link=[]
-domain=input("Enter the domain")
-url="https://www.virustotal.com/en/domain/"+domain+"/information/"
+import re
+def getcsrf(t):
+	d=t[(t.find("csrf")+28):(t.find("csrf")+60)]
+	return d
+total=[]
+def eliminate(l):
+        if(l not in total):
+                total.append(l)
+                
+url="https://dnsdumpster.com/"
+dom=input("Enter the domain ")
 r=requests.get(url)
 t=r.text
-f=open("D:\\file mer\\Github\\responses.txt","w",encoding="utf-8")
-f.write(t)
-f.close()
+#r=requests.post("https://dnsdumpster.com",data={'csrfmiddlewaretoken':getcsrf(t)})
+tkn="csrftoken="+getcsrf(t)+";"
+header = {"Referer":"https://dnsdumpster.com","Cookie" :tkn}
+r=requests.post("https://dnsdumpster.com",data={'csrfmiddlewaretoken':getcsrf(t),'targetip':dom},headers=header)
+#print(r.text)
+'''
+import urllib.request
+import urllib.parse
+values={'csrfmiddlewaretoken':getcsrf(t),'targetip':dom},headers=header)
+'''
+resp=r.text
+l=re.findall((r'<tr><td class="col-md-4">(.*?).'+dom+'<br>'),resp)
+for i in l:
+        if(i!=''):
+                v=i+'.'+dom
+                eliminate(v)
+
+link=[]
+url="https://www.virustotal.com/en/domain/"+dom+"/information/"
+r=requests.get(url)
+t=r.text
 f=open("D:\\file mer\\Github\\response.txt","w",encoding="utf-8")
 f.write(t)
 f.write("ENDOFFILE")
@@ -20,9 +46,14 @@ for i in f:
                                             a=f.readline()
                                             a.lstrip()
                                             if(a[-3:-1]=="om"):
-                                                               print(a[6:-1])
+                                                               #print(a[6:-1]) for each link
                                                                link=link+[a[6:-1]]
                                                                n+=1
+for i in link:
+    eliminate(i)
+for i in total:
+        print(i,"\n")
+
 if input("Do you want to store the links y/n")=="y":
     path=input("Input the path where links are to be stored")
     #path.replace("\\","\\\\")
@@ -33,8 +64,7 @@ if input("Do you want to store the links y/n")=="y":
     f2.close()
 else:
     print("Finished")
-'''
-           
+'''           
 import webbrowser
 url=""
 n=0
@@ -52,6 +82,6 @@ while line<n:
    line+=1
    webbrowser.get('firefox').open_new_tab(url)
 f.close()
-print("DONE")
+print("DONE")                            
+'''
 
-'''                                                    
